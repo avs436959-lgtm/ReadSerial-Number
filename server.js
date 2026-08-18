@@ -10,6 +10,9 @@ const cors = require('cors');
 const sql = require('mssql');
 
 const app = express();
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/seri-no-sorgulama (3).html');
+});
 app.use(cors());
 app.use(express.json());
 
