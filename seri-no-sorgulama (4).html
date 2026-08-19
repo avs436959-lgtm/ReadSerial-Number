@@ -221,7 +221,7 @@
     <canvas id="ocrCropCanvas" class="hidden"></canvas>
 
     <div id="ocrScanStatus" class="ocr-scan-status">
-      <span class="scan-dot"></span> جاري البحث عن رقم السلسلة في الصورة...
+      <span class="scan-dot"></span> جاري البحث عن رقم التسلسلي في الصورة...
     </div>
 
     <div id="ocrResultWrap" class="hidden" style="margin-top:14px;">
@@ -277,7 +277,7 @@
         area.innerHTML = '';
 
         if (!serial) {
-            mainHint.textContent = 'يرجى إدخال رقم السلسلة.';
+            mainHint.textContent = 'يرجى إدخال رقم التسلسلي.';
             mainHint.classList.add('err');
             return;
         }
@@ -305,10 +305,10 @@
                 return (
                     '<div class="record-card">' +
                         '<h3 class="record-title">معلومات الفاتورة</h3>' +
-                        (item.serial ? '<div class="record-row"><span class="label">رقم السلسلة</span><span class="value mono">' + escapeHtml(item.serial) + '</span></div>' : '') +
+                        (item.serial ? '<div class="record-row"><span class="label">رقم التسلسلي</span><span class="value mono">' + escapeHtml(item.serial) + '</span></div>' : '') +
                         (item.invoiceNo ? '<div class="record-row"><span class="label">رقم الفاتورة</span><span class="value">' + escapeHtml(item.invoiceNo) + '</span></div>' : '') +
                         (item.date ? '<div class="record-row"><span class="label">التاريخ</span><span class="value">' + escapeHtml(formatArabicDate(item.date)) + '</span></div>' : '') +
-                        (item.company ? '<div class="record-row"><span class="label">اسم الشركة</span><span class="value">' + escapeHtml(item.company) + '</span></div>' : '') +
+                        (item.company ? '<div class="record-row"><span class="label">اسم العميل</span><span class="value">' + escapeHtml(item.company) + '</span></div>' : '') +
                         (item.customer ? '<div class="record-row"><span class="label">اسم العميل</span><span class="value">' + escapeHtml(item.customer) + '</span></div>' : '') +
                         '<div class="record-row"><span class="label">حالة الكفالة</span><span class="value ' + (item.warrantyDate ? 'ok' : 'bad') + '">' +
                             (item.warrantyDate ? '✓ فعالة - حتى ' + escapeHtml(formatArabicDate(item.warrantyDate)) : '✗ غير متاح') +
