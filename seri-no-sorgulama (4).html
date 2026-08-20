@@ -152,7 +152,7 @@
     <div class="head-right">
       <div class="mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAlCAYAAABVjVnMAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKISURBVFhH7ZVdSFNhGMf/O5uOnKs0FCvoJoq0Ao/FbvzoyohaUjZxqagYTK0F3Zax/EDFLubNbJUfV0bOkTEMmqAS+XERqBCm60KhqCgsNBYxbW3tPB6Hy522Ljq76Pxu3v/z8PL+OA/vOUfm9Xr9iAEMv4qOJBYNSSwa/5844per7ekCpt9+pXxkrxo3zxwIJD+s1rtYXFikfiabibKyUsrR8kfx9UcuPHzxgfKhtET0VbPYsU2BtrbbGB0Zpf4GhYXnUVNbw1eRERy1kNRsbg9KlUolGGb9iIGBx+ju6qYcDWHFm6X7UxJIujMhjmqPx0OrQqFAQ2MDbtWbIJfLqWez9aOnu4dyJLaM+nepvfYYklVxsFg64Pf5ccV4Ga0trcg/mQ+NRkP7xscn0NTYBL9//aiS0hJUVlZQFiJEzF0k67M3lFPU8XBe02BXYjw6LHfgcDioX1BwFsarRsqbGXs+hubmFvh8Pqq5y1ZeUU45HCGj1h3fHRzpknsNI/NfKLNZmbRysFksn0LJzctFXd0NyGQyqnt7H6Cvz0Y5HFtG7fr4Dfp7M1j5/iNwCNBenIFzbBomJyZplNk52fzO8HAXj7v1G2OvulQFvb6Y8mbCvk6cvMg6DbfHCyZgNxenk3x1dRUu12t+lzDDw8MYcg7xVXi54Hs8+96Ni/dngnJL6WGcPpqKzs4u2Pvt/K7oMVQboNNd4CtAbjKZ6vkcQup2JfIOJsMx8wlrP31wzi4hY48aRady4Ak8+dyrOX5ndExNTUGlUiE9I51qwSfe4OU7N0bnP1OWMzIYTuyDUsFgcPAJVpaXqf83aLVaJCUnRRb/K2L2d5LEoiGJRUMSi4YkFo0YiYFfT7H0wOWLM7EAAAAASUVORK5CYII=" alt="logo"></div>
       <div>
-        <h1>البحث عن رقم السلسلة</h1>
+        <h1>A PLUS TECH TECHNOLOGY FOR INFORMATION</h1>
         <p>احصل على معلومات الفاتورة وحالة الكفالة فوراً</p>
       </div>
     </div>
@@ -165,7 +165,7 @@
 
   <div class="hero">
     <div class="hero-label">نظام الاستعلام عن الكفالة</div>
-    <h2>أدخل رقم السلسلة، أو امسح رمز QR أو الملصق مباشرة.</h2>
+    <h2>أدخل رقم التسلسلي، أو امسح رمز QR أو الملصق مباشرة.</h2>
 
     <div class="search-bar" id="searchBar">
       <button class="qr-icon-btn" id="ocrIconBtn" title="قراءة الملصق بالـ OCR" aria-label="قراءة نصية">
@@ -221,7 +221,7 @@
     <canvas id="ocrCropCanvas" class="hidden"></canvas>
 
     <div id="ocrScanStatus" class="ocr-scan-status">
-      <span class="scan-dot"></span> جاري البحث عن رقم السلسلة في الصورة...
+      <span class="scan-dot"></span> جاري البحث عن رقم التسلسلي في الصورة...
     </div>
 
     <div id="ocrResultWrap" class="hidden" style="margin-top:14px;">
@@ -277,7 +277,7 @@
         area.innerHTML = '';
 
         if (!serial) {
-            mainHint.textContent = 'يرجى إدخال رقم السلسلة.';
+            mainHint.textContent = 'يرجى إدخال رقم التسلسلي.';
             mainHint.classList.add('err');
             return;
         }
@@ -305,10 +305,10 @@
                 return (
                     '<div class="record-card">' +
                         '<h3 class="record-title">معلومات الفاتورة</h3>' +
-                        (item.serial ? '<div class="record-row"><span class="label">رقم السلسلة</span><span class="value mono">' + escapeHtml(item.serial) + '</span></div>' : '') +
+                        (item.serial ? '<div class="record-row"><span class="label">رقم التسلسلي</span><span class="value mono">' + escapeHtml(item.serial) + '</span></div>' : '') +
                         (item.invoiceNo ? '<div class="record-row"><span class="label">رقم الفاتورة</span><span class="value">' + escapeHtml(item.invoiceNo) + '</span></div>' : '') +
                         (item.date ? '<div class="record-row"><span class="label">التاريخ</span><span class="value">' + escapeHtml(formatArabicDate(item.date)) + '</span></div>' : '') +
-                        (item.company ? '<div class="record-row"><span class="label">اسم الشركة</span><span class="value">' + escapeHtml(item.company) + '</span></div>' : '') +
+                        (item.company ? '<div class="record-row"><span class="label">اسم العميلة</span><span class="value">' + escapeHtml(item.company) + '</span></div>' : '') +
                         (item.customer ? '<div class="record-row"><span class="label">اسم العميل</span><span class="value">' + escapeHtml(item.customer) + '</span></div>' : '') +
                         '<div class="record-row"><span class="label">حالة الكفالة</span><span class="value ' + (item.warrantyDate ? 'ok' : 'bad') + '">' +
                             (item.warrantyDate ? '✓ فعالة - حتى ' + escapeHtml(formatArabicDate(item.warrantyDate)) : '✗ غير متاح') +
