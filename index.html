@@ -283,8 +283,9 @@
     function formatArabicDate(dateString) {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString;
-        const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-        return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        return day + '/' + month + '/' + date.getFullYear();
     }
 
     // QR Kamera Mantığı
