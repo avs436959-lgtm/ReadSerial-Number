@@ -16,7 +16,7 @@ app.use(express.json());
 // ---- Sunucunuzdaki bağlantı bilgileri (.env dosyasından okunur) ----
 const dbConfig = {
   server:   process.env.DB_SERVER   || '49.13.144.181',
-  database: process.env.DB_DATABASE || 'APLUS_Invoice_new',
+  database: process.env.DB_DATABASE || 'APLUS_Invoice',
   user:     process.env.DB_USER     || 'avs',
   password: process.env.DB_PASSWORD || '',
   options: {
