@@ -242,14 +242,14 @@
                 return;
             }
 
-            const salesOnly = data.filter(function(item){ return item.type === 0; });
+            const allRecords = data;
 
-            if (!salesOnly.length) {
+            if (!allRecords.length) {
                 area.innerHTML = '<div class="state-box"><div class="big">◌</div><strong>لم يتم العثور على نتائج</strong><p>لا يوجد سجل لرقم السلسلة &quot;' + escapeHtml(serial) + '&quot;.</p></div>';
                 return;
             }
 
-            const cards = salesOnly.map(function(item){
+            const cards = allRecords.map(function(item){
                 return (
                     '<div class="record-card">' +
                         '<h3 class="record-title">معلومات الفاتورة</h3>' +
@@ -258,9 +258,14 @@
                         (item.date ? '<div class="record-row"><span class="label">التاريخ</span><span class="value">' + escapeHtml(formatArabicDate(item.date)) + '</span></div>' : '') +
                         (item.company ? '<div class="record-row"><span class="label">اسم العميلة</span><span class="value">' + escapeHtml(item.company) + '</span></div>' : '') +
                         (item.customer ? '<div class="record-row"><span class="label">اسم العميل</span><span class="value">' + escapeHtml(item.customer) + '</span></div>' : '') +
-                        '<div class="record-row"><span class="label">حالة الكفالة</span><span class="value ' + (item.warrantyDate ? 'ok' : 'bad') + '">' +
-                            (item.warrantyDate ? '✓ فعالة - حتى ' + escapeHtml(formatArabicDate(item.warrantyDate)) : '✗ غير متاح') +
-                        '</span></div>' +
+                        (function(){
+                            var isActive = item.warrantyDate && new Date(item.warrantyDate).getTime() >= Date.now();
+                            var cls = item.warrantyDate ? (isActive ? 'ok' : 'bad') : 'bad';
+                            var text = item.warrantyDate
+                                ? (isActive ? '✓ فعالة - حتى ' + escapeHtml(formatArabicDate(item.warrantyDate)) : '✗ منتهية - كانت حتى ' + escapeHtml(formatArabicDate(item.warrantyDate)))
+                                : '✗ غير متاح';
+                            return '<div class="record-row"><span class="label">حالة الكفالة</span><span class="value ' + cls + '">' + text + '</span></div>';
+                        })() +
                     '</div>'
                 );
             }).join('');
