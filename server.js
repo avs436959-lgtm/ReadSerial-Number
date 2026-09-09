@@ -81,7 +81,7 @@ app.get('/api/search', async (req, res) => {
       .input('serial', sql.NVarChar, serial)
       .query(`
         SELECT
-          det.SerialNumber     AS serial,
+          COALESCE(det.SerialNumber, det.SerialNo) AS serial,
           inv.InvoiceKind      AS type,
           inv.InvoiceNo        AS invoiceNo,
           inv.InvoiceDate      AS date,
@@ -91,7 +91,7 @@ app.get('/api/search', async (req, res) => {
           inv.Waranty_Renew_Date AS warrantyDate
         FROM TInvoiceDetails det
         LEFT JOIN TInvoice inv ON det.ParentId = inv.Id
-        WHERE det.SerialNumber = @serial
+        WHERE det.SerialNumber = @serial OR det.SerialNo = @serial
         ORDER BY inv.InvoiceDate DESC
       `);
 
