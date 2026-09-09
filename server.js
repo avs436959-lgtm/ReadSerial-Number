@@ -10,9 +10,6 @@ const cors = require('cors');
 const sql = require('mssql');
 
 const app = express();
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/seri-no-sorgulama (4).html');
-});
 app.use(cors());
 app.use(express.json());
 
@@ -72,8 +69,6 @@ app.get('/api/tables', async (req, res) => {
 });
 
 // ---- Seri no ile sorgulama ----
-// NOT: Aşağıdaki tablo adı ve sütun adlarını KENDİ veritabanınıza göre
-// düzenlemeniz gerekiyor. Şu an örnek/varsayım isimler kullanılıyor.
 app.get('/api/search', async (req, res) => {
   const serial = (req.query.serial || '').trim();
   if (!serial) {
