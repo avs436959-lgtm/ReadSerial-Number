@@ -242,14 +242,14 @@
                 return;
             }
 
-            const allRecords = data;
+            const salesOnly = data.filter(function(item){ return item.type === 0; });
 
-            if (!allRecords.length) {
+            if (!salesOnly.length) {
                 area.innerHTML = '<div class="state-box"><div class="big">◌</div><strong>لم يتم العثور على نتائج</strong><p>لا يوجد سجل لرقم السلسلة &quot;' + escapeHtml(serial) + '&quot;.</p></div>';
                 return;
             }
 
-            const cards = allRecords.map(function(item){
+            const cards = salesOnly.map(function(item){
                 return (
                     '<div class="record-card">' +
                         '<h3 class="record-title">معلومات الفاتورة</h3>' +
