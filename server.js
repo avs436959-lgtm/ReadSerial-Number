@@ -102,12 +102,31 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
+// ---- Fatura tiplerinin (InvoiceKind) dağılımı (tanı amaçlı) ----
+app.get('/api/invoice-kinds', async (req, res) => {
+  try {
+    const pool = await getPool();
+    const result = await pool.request().query(`
+      SELECT inv.InvoiceKind AS type, COUNT(*) AS count,
+             MIN(inv.InvoiceDate) AS earliest, MAX(inv.InvoiceDate) AS latest
+      FROM TInvoiceDetails det
+      LEFT JOIN TInvoice inv ON det.ParentId = inv.Id
+      GROUP BY inv.InvoiceKind
+      ORDER BY inv.InvoiceKind
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ---- Tüm seri numaralarını listele (test amaçlı) ----
 app.get('/api/serials', async (req, res) => {
   try {
     const pool = await getPool();
     const result = await pool.request().query(`
-      SELECT TOP 50 SerialNumber
+      SELECT SerialNumber
       FROM TInvoiceDetails
       WHERE SerialNumber IS NOT NULL AND SerialNumber != ''
       GROUP BY SerialNumber
