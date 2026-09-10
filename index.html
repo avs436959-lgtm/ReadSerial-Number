@@ -242,7 +242,7 @@
                 return;
             }
 
-            const salesOnly = data.filter(function(item){ return item.type === 0; });
+            const salesOnly = data;
 
             if (!salesOnly.length) {
                 area.innerHTML = '<div class="state-box"><div class="big">◌</div><strong>لم يتم العثور على نتائج</strong><p>لا يوجد سجل لرقم السلسلة &quot;' + escapeHtml(serial) + '&quot;.</p></div>';
