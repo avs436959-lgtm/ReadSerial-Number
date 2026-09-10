@@ -81,7 +81,7 @@ app.get('/api/search', async (req, res) => {
       .input('serial', sql.NVarChar, serial)
       .query(`
         SELECT
-          det.SerialNumber     AS serial,
+          COALESCE(det.SerialNumber, det.SerialNo) AS serial,
           inv.InvoiceKind      AS type,
           inv.InvoiceNo        AS invoiceNo,
           inv.InvoiceDate      AS date,
@@ -91,7 +91,7 @@ app.get('/api/search', async (req, res) => {
           inv.Waranty_Renew_Date AS warrantyDate
         FROM TInvoiceDetails det
         LEFT JOIN TInvoice inv ON det.ParentId = inv.Id
-        WHERE det.SerialNumber = @serial
+        WHERE det.SerialNumber = @serial OR det.SerialNo = @serial
         ORDER BY inv.InvoiceDate DESC
       `);
 
@@ -99,38 +99,6 @@ app.get('/api/search', async (req, res) => {
   } catch (err) {
     console.error('Sorgu hatası:', err.message);
     res.status(500).json({ error: 'Sunucu tarafında bir hata oluştu.' });
-  }
-});
-
-// ---- Kodun okuduğu tablo ve içindeki veriler (ilk 20 kayıt, tüm sütunlar) ----
-// Bu, /api/search'ün kullandığı AYNI sorgu - sadece belirli bir seri no
-// filtrelemeden, ilk 20 kaydı gösteriyor. Kodun tam olarak hangi tabloyu
-// ve hangi sütunları okuduğunu tarayıcıdan görmek için kullanışlı.
-app.get('/api/preview', async (req, res) => {
-  try {
-    const pool = await getPool();
-    const result = await pool.request().query(`
-      SELECT TOP 20
-        det.SerialNumber     AS serial,
-        inv.InvoiceKind      AS type,
-        inv.InvoiceNo        AS invoiceNo,
-        inv.InvoiceDate      AS date,
-        inv.Cus_Sup_CompanyName AS company,
-        inv.Customer_Name    AS customer,
-        inv.Waranty_Kind     AS warrantyKind,
-        inv.Waranty_Renew_Date AS warrantyDate
-      FROM TInvoiceDetails det
-      LEFT JOIN TInvoice inv ON det.ParentId = inv.Id
-      ORDER BY inv.InvoiceDate DESC
-    `);
-    res.json({
-      table: 'TInvoiceDetails (JOIN TInvoice)',
-      rowCount: result.recordset.length,
-      rows: result.recordset
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
   }
 });
 
