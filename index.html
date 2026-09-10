@@ -252,7 +252,7 @@
             const cards = salesOnly.map(function(item){
                 return (
                     '<div class="record-card">' +
-                        '<h3 class="record-title">معلومات الفاتورة</h3>' +
+                        '<h3 class="record-title">' + (item.type === 0 ? 'معلومات فاتورة البيع' : item.type === 1 ? 'معلومات فاتورة الشراء' : 'معلومات الفاتورة') + '</h3>' +
                         (item.serial ? '<div class="record-row"><span class="label">رقم التسلسلي</span><span class="value mono">' + escapeHtml(item.serial) + '</span></div>' : '') +
                         (item.invoiceNo ? '<div class="record-row"><span class="label">رقم الفاتورة</span><span class="value">' + escapeHtml(item.invoiceNo) + '</span></div>' : '') +
                         (item.date ? '<div class="record-row"><span class="label">التاريخ</span><span class="value">' + escapeHtml(formatArabicDate(item.date)) + '</span></div>' : '') +
