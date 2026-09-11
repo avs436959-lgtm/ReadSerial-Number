@@ -126,6 +126,23 @@
   }
   .modal-close:hover{border-color:var(--accent); color:var(--accent);}
 
+  .login-field{
+    width:100%; box-sizing:border-box; font-family:'Cairo',sans-serif; font-size:14px; font-weight:600;
+    padding:12px 14px; border:1.5px solid var(--line); border-radius:11px; background:var(--panel-2); color:var(--ink);
+    outline:none; margin-bottom:10px; transition:border-color .15s ease;
+  }
+  .login-field:focus{border-color:var(--accent);}
+  .login-field::placeholder{color:var(--muted-soft); font-weight:500;}
+  #loginForm .btn{width:100%; justify-content:center; margin-top:4px;}
+  .theme-toggle.logged-in{border-color:var(--teal); color:var(--teal);}
+
+  .toast{
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(10px); z-index:60; max-width:90%;
+    background:var(--teal-bg); color:var(--teal); border:1px solid var(--teal); border-radius:12px;
+    padding:12px 18px; font-size:13px; font-weight:700; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:all .25s ease; text-align:center;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
   #qr-reader{width:100%; border-radius:12px; overflow:hidden; border:1.5px solid var(--line); min-height:60px; background:#000;}
   .qr-hint{font-size:12px; color:var(--muted); text-align:center; margin-top:12px;}
 
@@ -144,6 +161,13 @@
       </div>
     </div>
     <div class="head-actions">
+      <button class="theme-toggle" id="loginBtn" title="تسجيل الدخول - قسم الصيانة والإصلاح" aria-label="تسجيل الدخول">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+          <polyline points="10 17 15 12 10 7"></polyline>
+          <line x1="15" y1="12" x2="3" y2="12"></line>
+        </svg>
+      </button>
       <button class="theme-toggle" id="themeToggle" title="تبديل المظهر">
         <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
       </button>
@@ -184,6 +208,24 @@
   </div>
 </div>
 
+<!-- Giriş Modalı -->
+<div class="modal-overlay" id="loginModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>تسجيل الدخول - قسم الصيانة والإصلاح</h3>
+      <button class="modal-close" id="loginModalClose">✕</button>
+    </div>
+    <form id="loginForm">
+      <input class="login-field" id="loginUsername" type="text" placeholder="اسم المستخدم" autocomplete="username">
+      <input class="login-field" id="loginPassword" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+      <div class="hint err hidden" id="loginError"></div>
+      <button type="submit" class="btn btn-primary" id="loginSubmitBtn">دخول</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
     const API_URL = 'https://readserial-number.onrender.com';
@@ -205,6 +247,91 @@
       const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       applyTheme(next);
       try{ localStorage.setItem('theme-pref', next); }catch(e){}
+    });
+
+    let authToken = null;
+    try { authToken = sessionStorage.getItem('auth_token'); } catch(e){}
+
+    function isLoggedIn(){ return !!authToken; }
+
+    function updateLoginUI(){
+      const btn = document.getElementById('loginBtn');
+      if (isLoggedIn()) {
+        btn.classList.add('logged-in');
+        btn.title = 'تسجيل الخروج (مسجّل دخول - قسم الصيانة والإصلاح)';
+      } else {
+        btn.classList.remove('logged-in');
+        btn.title = 'تسجيل الدخول - قسم الصيانة والإصلاح';
+      }
+    }
+    updateLoginUI();
+
+    function showToast(msg){
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(function(){ t.classList.remove('show'); }, 3500);
+    }
+
+    function openLoginModal(){
+      document.getElementById('loginError').classList.add('hidden');
+      document.getElementById('loginForm').reset();
+      document.getElementById('loginModalOverlay').classList.add('open');
+      setTimeout(function(){ document.getElementById('loginUsername').focus(); }, 50);
+    }
+    function closeLoginModal(){
+      document.getElementById('loginModalOverlay').classList.remove('open');
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', function(){
+      if (isLoggedIn()) {
+        authToken = null;
+        try { sessionStorage.removeItem('auth_token'); } catch(e){}
+        updateLoginUI();
+        showToast('تم تسجيل الخروج.');
+        if (serialInput.value.trim()) searchSerial();
+      } else {
+        openLoginModal();
+      }
+    });
+    document.getElementById('loginModalClose').addEventListener('click', closeLoginModal);
+    document.getElementById('loginModalOverlay').addEventListener('click', function(e){
+      if (e.target.id === 'loginModalOverlay') closeLoginModal();
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const errBox = document.getElementById('loginError');
+      errBox.classList.add('hidden');
+      const submitBtn = document.getElementById('loginSubmitBtn');
+      submitBtn.disabled = true;
+      try {
+        const res = await fetch(API_URL + '/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: username, password: password })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          errBox.textContent = data.message || 'اسم المستخدم أو كلمة المرور غير صحيحة.';
+          errBox.classList.remove('hidden');
+          return;
+        }
+        authToken = data.token;
+        try { sessionStorage.setItem('auth_token', authToken); } catch(e){}
+        updateLoginUI();
+        closeLoginModal();
+        showToast('تم تسجيل الدخول إلى قسم الصيانة والإصلاح.');
+        if (serialInput.value.trim()) searchSerial();
+      } catch (err) {
+        errBox.textContent = 'تعذر الاتصال بالخادم.';
+        errBox.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+      }
     });
 
     const searchBar = document.getElementById('searchBar');
@@ -234,7 +361,9 @@
         area.innerHTML = '<div class="loading-row"><span class="spinner"></span> جاري البحث...</div>';
 
         try {
-            const response = await fetch(API_URL + '/api/search?serial=' + encodeURIComponent(serial));
+            const headers = {};
+            if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+            const response = await fetch(API_URL + '/api/search?serial=' + encodeURIComponent(serial), { headers: headers });
             const data = await response.json();
 
             if (!response.ok) {
