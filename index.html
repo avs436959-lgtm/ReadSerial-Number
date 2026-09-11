@@ -141,17 +141,17 @@
   .modal-close:hover{border-color:var(--accent); color:var(--accent);}
 
   .login-field{
-    width:100%; box-sizing:border-box; font-family:'Cairo',sans-serif; font-size:14px; font-weight:600;
+    width:100%; box-sizing:border-box; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:600;
     padding:12px 14px; border:1.5px solid var(--line); border-radius:11px; background:var(--panel-2); color:var(--ink);
-    outline:none; margin-bottom:10px; transition:border-color .15s ease;
+    outline:none; margin-bottom:10px; transition:border-color .15s ease; direction:ltr; text-align:right;
   }
   .login-field:focus{border-color:var(--accent);}
   .login-field::placeholder{color:var(--muted-soft); font-weight:500;}
   #loginForm .btn{width:100%; justify-content:center; margin-top:4px;}
   .password-field-wrap{position:relative;}
-  .password-field-wrap .login-field{padding-inline-end:44px;}
+  .password-field-wrap .login-field{padding-left:44px; padding-right:14px;}
   .password-toggle{
-    position:absolute; top:50%; transform:translateY(-50%); inset-inline-end:10px; width:26px; height:26px;
+    position:absolute; top:50%; transform:translateY(-50%); left:10px; width:26px; height:26px;
     border:none; background:transparent; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center;
   }
   .password-toggle:hover{color:var(--accent);}
