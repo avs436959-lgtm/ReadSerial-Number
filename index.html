@@ -445,7 +445,7 @@
                                 ? (isActive ? '✓ فعالة - حتى ' + escapeHtml(formatArabicDate(item.warrantyDate)) : '✗ الكفاله منتهية- ' + escapeHtml(formatArabicDate(item.warrantyDate)))
                                 : '✗ غير متاح';
                             var row = '<div class="record-row"><span class="label">حالة الكفالة</span><span class="value ' + cls + '">' + text + '</span></div>';
-                            if (isExpired) {
+                            if (isExpired && item.type === 0 && !isLoggedIn()) {
                                 row += '<div class="warranty-expired-note">انتهت فترة الكفالة الخاصة بهذا المنتج.<br>لتقديم الدعم الفني، يُرجى التواصل مع قسم الصيانة.</div>';
                             }
                             return row;
