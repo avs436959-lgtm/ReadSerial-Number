@@ -8,10 +8,62 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const sql = require('mssql');
+const crypto = require('crypto');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ---- Tamir ve Onarım bölümü girişi ----
+// Kullanıcı adı/şifreyi .env dosyasında ADMIN_USERNAME / ADMIN_PASSWORD
+// olarak tanımlayın. AUTH_SECRET, giriş jetonunu imzalamak için kullanılır
+// ve production'da mutlaka değiştirilmelidir.
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const AUTH_SECRET = process.env.AUTH_SECRET || 'lutfen-bu-degeri-degistirin';
+const TOKEN_TTL_MS = 12 * 60 * 60 * 1000; // 12 saat
+
+function createToken(username) {
+  const expires = Date.now() + TOKEN_TTL_MS;
+  const payload = username + '.' + expires;
+  const sig = crypto.createHmac('sha256', AUTH_SECRET).update(payload).digest('hex');
+  return Buffer.from(payload + '.' + sig, 'utf8').toString('base64');
+}
+
+function verifyToken(token) {
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf8');
+    const parts = decoded.split('.');
+    if (parts.length !== 3) return false;
+    const [username, expiresStr, sig] = parts;
+    const payload = username + '.' + expiresStr;
+    const expectedSig = crypto.createHmac('sha256', AUTH_SECRET).update(payload).digest('hex');
+    const sigBuf = Buffer.from(sig, 'hex');
+    const expectedBuf = Buffer.from(expectedSig, 'hex');
+    if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) return false;
+    if (Date.now() > Number(expiresStr)) return false;
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function isRequestAuthed(req) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+  return token && verifyToken(token);
+}
+
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 });
+
+app.post('/api/login', loginLimiter, (req, res) => {
+  const { username, password } = req.body || {};
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    return res.json({ ok: true, token: createToken(username) });
+  }
+  res.status(401).json({ ok: false, message: 'Kullanıcı adı veya şifre hatalı.' });
+});
 
 // ---- Sunucunuzdaki bağlantı bilgileri (.env dosyasından okunur) ----
 const dbConfig = {
@@ -95,7 +147,11 @@ app.get('/api/search', async (req, res) => {
         ORDER BY inv.InvoiceDate DESC
       `);
 
-    res.json(result.recordset);
+    const rows = isRequestAuthed(req)
+      ? result.recordset
+      : result.recordset.filter(row => row.type === 0);
+
+    res.json(rows);
   } catch (err) {
     console.error('Sorgu hatası:', err.message);
     res.status(500).json({ error: 'Sunucu tarafında bir hata oluştu.' });
