@@ -183,14 +183,14 @@
       </div>
     </div>
     <div class="head-actions">
-      <button class="theme-toggle" id="loginBtn" title="تسجيل الدخول - قسم الصيانة والإصلاح" aria-label="تسجيل الدخول">
+      <button class="theme-toggle" id="loginBtn" title="تسجيل الدخول - قسم الصيانة " aria-label="تسجيل الدخول">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
           <polyline points="10 17 15 12 10 7"></polyline>
           <line x1="15" y1="12" x2="3" y2="12"></line>
         </svg>
       </button>
-      <button class="theme-toggle logged-in hidden" id="logoutBtn" title="تسجيل الخروج - قسم الصيانة والإصلاح" aria-label="تسجيل الخروج">
+      <button class="theme-toggle logged-in hidden" id="logoutBtn" title="تسجيل الخروج - قسم الصيانة " aria-label="تسجيل الخروج">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
           <polyline points="16 17 21 12 16 7"></polyline>
@@ -250,7 +250,7 @@
 <div class="modal-overlay" id="loginModalOverlay">
   <div class="modal">
     <div class="modal-head">
-      <h3>تسجيل الدخول - قسم الصيانة والإصلاح</h3>
+      <h3>تسجيل الدخول - قسم الصيانة </h3>
       <button class="modal-close" id="loginModalClose">✕</button>
     </div>
     <form id="loginForm">
@@ -374,7 +374,7 @@
         try { sessionStorage.setItem('auth_token', authToken); } catch(e){}
         updateLoginUI();
         closeLoginModal();
-        showToast('تم تسجيل الدخول إلى قسم الصيانة والإصلاح.');
+        showToast('تم تسجيل الدخول إلى قسم الصيانة .');
         if (serialInput.value.trim()) searchSerial();
       } catch (err) {
         errBox.textContent = 'تعذر الاتصال بالخادم.';
@@ -431,12 +431,12 @@
             const cards = salesOnly.map(function(item){
                 return (
                     '<div class="record-card">' +
-                        '<h3 class="record-title">' + (item.type === 0 ? 'معلومات فاتورة البيع' : item.type === 1 ? 'معلومات فاتورة الشراء' : 'معلومات الفاتورة') + '</h3>' +
+                        '<h3 class="record-title">' + (!isLoggedIn() ? 'معلومات الجهاز' : item.type === 0 ? 'معلومات فاتورة البيع' : item.type === 1 ? 'معلومات فاتورة الشراء' : 'معلومات الفاتورة') + '</h3>' +
                         (item.serial ? '<div class="record-row"><span class="label">رقم التسلسلي</span><span class="value mono">' + escapeHtml(item.serial) + '</span></div>' : '') +
                         (item.invoiceNo ? '<div class="record-row"><span class="label">رقم الفاتورة</span><span class="value">' + escapeHtml(item.invoiceNo) + '</span></div>' : '') +
                         (item.date ? '<div class="record-row"><span class="label">التاريخ</span><span class="value">' + escapeHtml(formatArabicDate(item.date)) + '</span></div>' : '') +
-                        (item.company ? '<div class="record-row"><span class="label">اسم الشركة</span><span class="value">' + escapeHtml(item.company) + '</span></div>' : '') +
-                        (item.customer ? '<div class="record-row"><span class="label">اسم العميل</span><span class="value">' + escapeHtml(item.customer) + '</span></div>' : '') +
+                        (item.company && isLoggedIn() ? '<div class="record-row"><span class="label">اسم الشركة</span><span class="value">' + escapeHtml(item.company) + '</span></div>' : '') +
+                        (item.customer && isLoggedIn() ? '<div class="record-row"><span class="label">اسم العميل</span><span class="value">' + escapeHtml(item.customer) + '</span></div>' : '') +
                         (function(){
                             var isExpired = item.warrantyDate && new Date(item.warrantyDate).getTime() < Date.now();
                             var isActive = item.warrantyDate && !isExpired;
